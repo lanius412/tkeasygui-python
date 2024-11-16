@@ -3144,6 +3144,7 @@ class Combo(Element):
                 default_value: str="",
                 key: Union[str, None] = None,
                 enable_events: bool = False,
+                readonly: bool = False,
                 # other
                 metadata: Union[dict[str, Any], None] = None,
                 **kw) -> None:
@@ -3151,6 +3152,7 @@ class Combo(Element):
         self.values = values
         self.value: tk.StringVar|None = None
         self.default_value = default_value
+        self.readonly: bool = readonly
         # event
         if enable_events:
             self.bind_events({
@@ -3162,6 +3164,8 @@ class Combo(Element):
         self.value = tk.StringVar()
         self.widget = ttk.Combobox(parent, values=self.values, textvariable=self.value, **self.props)
         self.set_value(self.default_value)
+        if self.readonly:
+            self.set_readonly(self.readonly)
         return self.widget
 
     def set_values(self, values: list[str]) -> None:
@@ -3179,6 +3183,12 @@ class Combo(Element):
         if self.widget is None:
             return None
         return self.value.get()
+    
+    def set_readonly(self, readonly: bool) -> None:
+        """set readonly"""
+        self.readonly = readonly
+        state = "readonly" if self.readonly else "normal"
+        self._widget_update(state=state)
 
     def update(self, *args, **kw) -> None:
         """Update the widget."""
